@@ -1,0 +1,33 @@
+.k-grid tr .checkbox-align {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.k-rating-container .k-rating-item {
+  padding: 4px 0;
+}
+
+.k-rating-container .k-rating-item .k-icon {
+  font-size: 16px;
+}
+
+.dropdown-country-wrap {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.dropdown-country-wrap img {
+  margin-right: 10px;
+}
+
+#grid .k-grid-edit-row > td > .k-rating {
+  margin-left: 0;
+  width: 100%;
+}
+
+.k-grid .k-grid-search {
+  margin-left: auto;
+  margin-right: 0;
+}

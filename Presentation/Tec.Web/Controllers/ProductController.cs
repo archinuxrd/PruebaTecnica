@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+
 
 namespace Tec.Web.Controllers
 {
@@ -16,6 +16,11 @@ namespace Tec.Web.Controllers
         public ProductController(ILogger<ProductController> logger)
         {
             _logger = logger;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
         }
     }
 }

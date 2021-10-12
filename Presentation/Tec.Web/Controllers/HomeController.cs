@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Tec.Web.Models;
 using System.Diagnostics;
+using Tec.Web.Models.Error;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
