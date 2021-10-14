@@ -69,12 +69,12 @@
 
         $('.products').each(function (index, data) {
             $(this).on("click", function () {
-                $('#product-price').html("RD$" + $('input[type=hidden]')[index].value);
+                $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[index].value).toFixed(2));
             });
         });
         
         if ($('input[type=hidden]')[0] !== undefined && $('input[type=hidden]')[0].value !== undefined){
-            $('#product-price').html("RD$" + $('input[type=hidden]')[0].value);
+            $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[0].value).toFixed(2));
         }
         
         if ($('input[type=hidden]')[0] === undefined)

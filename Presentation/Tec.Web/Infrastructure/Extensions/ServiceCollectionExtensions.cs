@@ -15,6 +15,7 @@ namespace Tec.Web.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        #region Methods
         public static IServiceCollection AddRepository(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IProductRepository, ProductRepository>();
@@ -48,5 +49,6 @@ namespace Tec.Web.Infrastructure.Extensions
             services.AddTransient<IProductCombinationService, ProductCombinationService>();
             return services;
         }
+        #endregion
     }
 }

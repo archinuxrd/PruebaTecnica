@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Tec.Web.Controllers
 {
     [Route("Product")]
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
@@ -70,6 +70,14 @@ namespace Tec.Web.Controllers
                 Success = true,
                 Message = "The Product was successfully created!"
             });
+        }
+        
+        [HttpPost]
+        [ActionName("Product/Details")]
+        public async Task<JsonResult> DetailAsync()
+        {
+            var data = await _productService.GetAllAsync(includeProperties: "Combinations");
+            return new JsonResult(data);
         }
 
         [HttpPut]

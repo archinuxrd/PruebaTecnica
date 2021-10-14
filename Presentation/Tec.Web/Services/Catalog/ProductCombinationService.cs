@@ -72,7 +72,6 @@ namespace Tec.Web.Services.Catalog
         #endregion
         
         #region Properties
-
         public IQueryable<Combination> Table => _db.Combinations.Table;
         #endregion
     }

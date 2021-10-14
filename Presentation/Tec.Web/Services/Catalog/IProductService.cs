@@ -9,6 +9,7 @@ namespace Tec.Web.Services.Catalog
 {
     public partial interface IProductService
     {
+        #region Methods
         Task<ProductViewModel> AddAsync(ProductViewModel model);
         Task<bool> AnyAsync(Expression<Func<ProductViewModel, bool>> expression);
         Task<ProductViewModel> FirstByIdAsync(int id, string includeProperties = null);
@@ -22,6 +23,10 @@ namespace Tec.Web.Services.Catalog
         Task<ProductViewModel> UpdateAsync(ProductViewModel viewModel);
         Task<int> DeleteProductAsync(ProductViewModel product);
         Task<ICollection<CombinationViewModel>> GetAllCombinationsByProductIdAsync(int productId);
+        #endregion
+        
+        #region Properties
         IQueryable<Product> Table { get; }
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Tec.Web.Controllers
 {
     [Route("Combination")]
-    public class ProductCombinationController : Controller
+    public class ProductCombinationController : BaseController
     {
         private readonly IProductCombinationService _productCombinationService;
         private readonly ILogger<ProductCombinationController> _logger;
