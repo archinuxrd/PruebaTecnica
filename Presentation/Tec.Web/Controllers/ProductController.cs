@@ -27,13 +27,13 @@ namespace Tec.Web.Controllers
         }
 
         [HttpPost]
-        [Route("")]
+        [Route("Get")]
         public async Task<JsonResult> GetAsync()
         {
             var data = await _productService.GetAllAsync(null, includeProperties: "Combinations");
             return new JsonResult(data);
         }
-        
+
         [Route("Details/{id:int}")]
         public async Task<IActionResult> DetailsAsync(int id)
         {
@@ -44,7 +44,7 @@ namespace Tec.Web.Controllers
             }
             return View(result);
         }
-        
+
         [HttpDelete]
         [Route("Delete")]
         public async Task<IActionResult> DeleteAsync(ProductViewModel model)
@@ -56,7 +56,7 @@ namespace Tec.Web.Controllers
                 Message = "Product was successfully deleted!"
             });
         }
-        
+
         [HttpPost]
         [Route("Create")]
         public async Task<JsonResult> CreateAsync(ProductViewModel model)
@@ -71,10 +71,10 @@ namespace Tec.Web.Controllers
                 Message = "The Product was successfully created!"
             });
         }
-        
+
         [HttpPost]
-        [ActionName("Product/Details")]
-        public async Task<JsonResult> DetailAsync()
+        [ActionName("Lists")]
+        public async Task<JsonResult> ListsAsync()
         {
             var data = await _productService.GetAllAsync(includeProperties: "Combinations");
             return new JsonResult(data);

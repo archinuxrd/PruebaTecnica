@@ -68,13 +68,13 @@
         });
 
         $('.products').each(function (index, data) {
-            $(this).on("click", function () {
-                $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[index].value).toFixed(2));
+            $(this).on("click", function (e) {
+                $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[index + 1].value).toFixed(2));
             });
         });
         
-        if ($('input[type=hidden]')[0] !== undefined && $('input[type=hidden]')[0].value !== undefined){
-            $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[0].value).toFixed(2));
+        if ($('input[type=hidden]')[0] !== undefined && $('input[type=hidden]')[1].value !== undefined){
+            $('#product-price').html("RD$" + parseFloat($('input[type=hidden]')[1].value).toFixed(2));
         }
         
         if ($('input[type=hidden]')[0] === undefined)

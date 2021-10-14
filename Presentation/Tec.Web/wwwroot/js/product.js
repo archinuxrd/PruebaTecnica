@@ -3,7 +3,7 @@
         dataSource: {
             transport: {
                 read:  {
-                    url: "/Product",
+                    url: "/Product/Get",
                     type: "POST",
                     dataType: "json"
                 },
@@ -96,7 +96,12 @@ function detailInit(e) {
                 read:  {
                     url: "/Combination",
                     type: "POST",
-                    dataType: "json"
+                    dataType: "json",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
                 },
                 destroy: {
                     url: "/Combination/Delete",
