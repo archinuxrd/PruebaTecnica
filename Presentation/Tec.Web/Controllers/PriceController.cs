@@ -1,17 +1,12 @@
-using System;
 using System.Linq;
-using Tec.Web.Data;
 using Tec.Web.Repositories;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 
 namespace Tec.Web.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PriceController : BaseApiController
+    public class PriceController : Controller
     {
         #region Fields
         private readonly IUnitOfWork _unitOfWork;
@@ -25,23 +20,19 @@ namespace Tec.Web.Controllers
         #endregion
 
         #region Methods
-        [ActionName("Get/{id}")]
-        public async Task<OkObjectResult> GetAsync(int id)
-        {
-            return Ok(await _unitOfWork.Products.GetAsync(p => p.Id == id));
-        }
         
-        
-        [ActionName("GetAll")]
-        public async Task<OkObjectResult> GetAllAsync()
+        [HttpPost]
+        [ActionName("Product/Details")]
+        public async Task<JsonResult> GetAsync()
         {
-            return Ok(await _unitOfWork.Products.GetAsync(p => p.Id == 1));
+            var result = _unitOfWork.Products.AllAsync(null);
+            var data = new
+            {
+                Items = await result,
+                TotalCounts = result.Result.Count()
+            };
+            return new JsonResult(data);
         }
-
-        // public async Task<OkObjectResult> AllAsync()
-        // {
-        //     return await _unitOfWork.Products.AllAsync(null);
-        // }
         #endregion
     }
 }

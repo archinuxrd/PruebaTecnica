@@ -1,83 +1,73 @@
-using System;
-using System.Linq;
-using System.Diagnostics;
+using Tec.Web.Helper;
+using Tec.Web.Models.Catalog;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Kendo.Mvc.UI;
+using Tec.Web.Services.Catalog;
 using Microsoft.Extensions.Logging;
-using Tec.Web.Models.Catalog;
-using Tec.Web.Repositories;
-
 
 namespace Tec.Web.Controllers
 {
-    public class ProductController : Controller
+    [Route("Combination")]
+    public class ProductCombinationController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<ProductController> _logger;
+        private readonly IProductCombinationService _productCombinationService;
+        private readonly ILogger<ProductCombinationController> _logger;
 
-        public ProductController(IUnitOfWork unitOfWork,
-            ILogger<ProductController> logger)
+        public ProductCombinationController(IProductCombinationService productCombinationService,
+            ILogger<ProductCombinationController> logger)
         {
-            _unitOfWork = unitOfWork;
+            _productCombinationService = productCombinationService;
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-        
-        [Route("Product/Details/{id}")]
-        public async Task<IActionResult> DetailsAsync(int id)
-        {
-            var result = await _unitOfWork.Products.FirstAsync(p => p.Id == id, "Combinations");
-            var model = new ProductViewModel
-            {
-                Product = result,
-                Combinations = result.Combinations
-            };
-            return View(model);
-        }
-
         [HttpPost]
-        [Route("Product")]
+        [Route("")]
         public async Task<JsonResult> GetAsync()
         {
-            var result = _unitOfWork.Products.AllAsync(includeProperties: "Combinations");
-            var data = new
-            {
-                Items = await result,
-                TotalCounts = result.Result.Count()
-            };
-            return new JsonResult(data);
+            var combinations = await _productCombinationService.GetAllAsync();
+            return new JsonResult(combinations);
         }
         
         [HttpPost]
-        [Route("Product/Combinations")]
-        public async Task<JsonResult> CombinationAsync()
+        [Route("Create")]
+        public async Task<JsonResult> CreateAsync(CombinationViewModel model)
         {
-            var result = _unitOfWork.Combinations.AllAsync(includeProperties: "Product");
-            var data = new
+            if (model != null)
             {
-                Items = await result,
-                TotalCounts = result.Result.Count()
-            };
-            return new JsonResult(data);
+                await _productCombinationService.AddAsync(model);
+            }
+            var combinations = await _productCombinationService.GetAllAsync(includeProperties: "Product");
+            return new JsonResult(combinations);
         }
 
-        [HttpPost]
-        [Route("Product/Edit")]
-        public async Task<JsonResult> EditAsync()
+        [HttpPut]
+        [Route("Update")]
+        public async Task<JsonResult> UpdateAsync(CombinationViewModel model)
         {
-            var result = _unitOfWork.Products.AllAsync(null, includeProperties: "Combinations");
-            var data = new
+            if (model != null)
             {
-                Items = await result,
-                TotalCounts = result.Result.Count()
-            };
-            return new JsonResult(data);
+                await _productCombinationService.UpdateAsync(model);
+            }
+            var combinations = await _productCombinationService.GetAllAsync(includeProperties: "Product");
+            return new JsonResult(combinations);
+        }
+        
+        [HttpDelete]
+        [Route("Delete")]
+        public async Task<JsonResult> DeleteAsync(CombinationViewModel model)
+        {
+            if (model != null)
+            {
+                await _productCombinationService.DeleteCombinationAsync(model);
+            }
+            var combinations = await _productCombinationService.GetAllAsync(includeProperties: "Product");
+            return new JsonResult(combinations);
+        }
+        
+        [Route("Color")]
+        public JsonResult Color()
+        {
+            return new JsonResult(CommonHelper.GetAllColors());
         }
     }
 }

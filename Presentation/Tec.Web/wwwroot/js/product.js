@@ -1,261 +1,193 @@
-﻿$(document).ready(function () {
-    var crudServiceBaseUrl = "https://demos.telerik.com/kendo-ui/service",
-        dataSource = new kendo.data.DataSource({
+﻿$(document).ready(function() {
+    let dataSource = $("#grid").kendoGrid({
+        dataSource: {
             transport: {
-                read: {
-                    url: crudServiceBaseUrl + "/detailproducts",
-                    dataType: "jsonp"
+                read:  {
+                    url: "/Product",
+                    type: "POST",
+                    dataType: "json"
                 },
                 update: {
-                    url: crudServiceBaseUrl + "/detailproducts/Update",
-                    dataType: "jsonp"
+                    url: "/Product/Edit",
+                    type: "PUT",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
                 },
                 destroy: {
-                    url: crudServiceBaseUrl + "/detailproducts/Destroy",
-                    dataType: "jsonp"
+                    url: "/Product/Delete",
+                    type: "DELETE",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
                 },
-                parameterMap: function (options, operation) {
-                    if (operation !== "read" && options.models) {
-                        return { models: kendo.stringify(options.models) };
+                create: {
+                    url: "/Product/Create",
+                    type: "POST",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
+                },
+                parameterMap: function(options, operation) {
+                    if (operation !== "read" && options) {
+                        return { model: options.model};
                     }
                 }
-            },
-            batch: true,
-            pageSize: 5,
-            autoSync: true,
-            aggregate: [{
-                field: "TotalSales",
-                aggregate: "sum"
-            }],
-            group: {
-                field: "Category.CategoryName",
-                dir: "desc",
-                aggregates: [
-                    { field: "TotalSales", aggregate: "sum" }
-                ]
             },
             schema: {
                 model: {
-                    id: "ProductID",
+                    id: "Id",
                     fields: {
-                        ProductID: { editable: false, nullable: true },
-                        TargetSales: { type: "number", editable: false },
-                        UnitPrice: { type: "number" },
-                        LastSupply: { type: "date" },
-                        UnitsInStock: { type: "number" },
-                        Category: {
-                            defaultValue: {
-                                CategoryID: 8,
-                                CategoryName: "Seafood"
-                            }
-                        }
+                        Id: { editable: false, nullable: true },
+                        Sku: { type: "string", validation: { required: true }, },
+                        Name: { type: "string", validation: { required: true }, },
+                        Description: { type: "string", validation: { required: true }, }
                     }
                 }
             }
-        });
-
-    $("#grid").kendoGrid({
-        dataSource: dataSource,
-        columnMenu: {
-            filterable: false
         },
-        height: 680,
-        editable: "incell",
-        pageable: true,
+        height: 600,
         sortable: true,
-        navigatable: true,
-        resizable: true,
-        reorderable: true,
-        groupable: true,
-        filterable: true,
-        dataBound: onDataBound,
-        toolbar: ["excel", "pdf", "search"],
-        columns: [{
-            selectable: true,
-            width: 75,
-            attributes: {
-                "class": "checkbox-align",
-            },
-            headerAttributes: {
-                "class": "checkbox-align",
-            }
-        }, {
-            field: "ProductName",
-            title: "Product Name",
-            template: "<div class='product-photo' style='background-image: url(../content/web/foods/#:data.ProductID#.jpg);'></div><div class='product-name'>#: ProductName #</div>",
-            width: 300
-        }, {
-            field: "UnitPrice",
-            title: "Price",
-            format: "{0:c}",
-            width: 105
-        }, {
-            field: "Discontinued",
-            title: "In Stock",
-            template: "<span id='badge_#=ProductID#' class='badgeTemplate'></span>",
-            width: 130,
-        }, {
-            field: "Category.CategoryName",
-            title: "Category",
-            editor: clientCategoryEditor,
-            groupHeaderTemplate: "Category: #=data.value#, Total Sales: #=kendo.format('{0:c}', aggregates.TotalSales.sum)#",
-            width: 125
-        }, {
-            field: "CustomerRating",
-            title: "Rating",
-            template: "<input id='rating_#=ProductID#' data-bind='value: CustomerRating' class='rating'/>",
-            editable: returnFalse,
-            width: 140
-        }, {
-            field: "Country.CountryNameLong",
-            title: "Country",
-            template: "<div class='k-text-center'><img src='../content/web/country-flags/#:data.Country.CountryNameShort#.png' alt='#: data.Country.CountryNameLong#' title='#: data.Country.CountryNameLong#' width='30' /></div>",
-            editor: clientCountryEditor,
-            width: 120
-        }, {
-            field: "UnitsInStock",
-            title: "Units",
-            width: 105
-        }, {
-            field: "TotalSales",
-            title: "Total Sales",
-            format: "{0:c}",
-            width: 140,
-            aggregates: ["sum"],
-        }, {
-            field: "TargetSales",
-            title: "Target Sales",
-            format: "{0:c}",
-            template: "<span id='chart_#= ProductID#' class='sparkline-chart'></span>",
-            width: 220
+        pageSize: 2,
+        pageable: {
+            refresh: true,
+            input: false,
+            numeric: true
         },
-        { command: "destroy", title: "&nbsp;", width: 120 }],
+        toolbar: ["create", "search"],
+        detailInit: detailInit,
+        columns: [
+            {
+                field: "Sku",
+                title: "Sku",
+                width: "110px"
+            },
+            {
+                field: "Name",
+                title: "Name",
+                width: "185px"
+            },
+            {
+                field: "Description",
+                title: "Description"
+            },
+            { command: [{ text: "View", click: showDetails, title: "&nbsp;" }, "edit", "destroy"], title: "&nbsp;", width: "275px" }
+        ],
+        editable: "popup",
     });
 });
 
-function onDataBound(e) {
-    var grid = this;
-    grid.table.find("tr").each(function () {
-        var dataItem = grid.dataItem(this);
-        var themeColor = dataItem.Discontinued ? 'success' : 'error';
-        var text = dataItem.Discontinued ? 'available' : 'not available';
+function showDetails(e) {
+    let dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    window.location.href = "/Product/Details/"+dataItem.Id;
 
-        $(this).find(".badgeTemplate").kendoBadge({
-            themeColor: themeColor,
-            text: text,
-        });
+}
 
-        $(this).find(".rating").kendoRating({
-            min: 1,
-            max: 5,
-            label: false,
-            selection: "continuous"
-        });
-
-        $(this).find(".sparkline-chart").kendoSparkline({
-            legend: {
-                visible: false
-            },
-            data: [dataItem.TargetSales],
-            type: "bar",
-            chartArea: {
-                margin: 0,
-                width: 180,
-                background: "transparent"
-            },
-            seriesDefaults: {
-                labels: {
-                    visible: true,
-                    format: '{0}%',
-                    background: 'none'
-                }
-            },
-            categoryAxis: {
-                majorGridLines: {
-                    visible: false
+function detailInit(e) {
+    $("<div/>").appendTo(e.detailCell).kendoGrid({
+        dataSource: {
+            transport: {
+                read:  {
+                    url: "/Combination",
+                    type: "POST",
+                    dataType: "json"
                 },
-                majorTicks: {
-                    visible: false
-                }
-            },
-            valueAxis: {
-                type: "numeric",
-                min: 0,
-                max: 130,
-                visible: false,
-                labels: {
-                    visible: false
+                destroy: {
+                    url: "/Combination/Delete",
+                    type: "DELETE",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
                 },
-                minorTicks: { visible: false },
-                majorGridLines: { visible: false }
-            },
-            tooltip: {
-                visible: false
-            }
-        });
-
-        kendo.bind($(this), dataItem);
-    });
-}
-
-function returnFalse() {
-    return false;
-}
-
-function clientCategoryEditor(container, options) {
-    $('<input required name="Category">')
-        .appendTo(container)
-        .kendoDropDownList({
-            autoBind: false,
-            dataTextField: "CategoryName",
-            dataValueField: "CategoryID",
-            dataSource: {
-                data: categories
-            }
-        });
-}
-
-function clientCountryEditor(container, options) {
-    $('<input required name="Country">')
-        .appendTo(container)
-        .kendoDropDownList({
-            dataTextField: "CountryNameLong",
-            dataValueField: "CountryNameShort",
-            template: "<div class='dropdown-country-wrap'><img src='../content/web/country-flags/#:CountryNameShort#.png' alt='#: CountryNameLong#' title='#: CountryNameLong#' width='30' /><span>#:CountryNameLong #</span></div>",
-            dataSource: {
-                transport: {
-                    read: {
-                        url: " https://demos.telerik.com/kendo-ui/service/countries",
-                        dataType: "jsonp"
+                create: {
+                    url: "/Combination/Create",
+                    type: "POST",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
+                },
+                parameterMap: function(options, operation) {
+                    if (operation !== "read" && options) {
+                        return { model: options.model };
                     }
                 }
             },
-            autoWidth: true
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, nullable: true },
+                        ProductId: { type: "number", editable: false, defaultValue:  e.data.Id  },
+                        Quantity: { type: "number", format: "{0:#}", validation: { required: true, min: 1, max: 10000 }, defaultValue: 1},
+                        Color: { type: "string", validation: { required: true } },
+                        UnitPrice: { type: "number",  validation: { required: true, min: 1, max: 1000000 } },
+                    }
+                }
+            },
+            filter: { field: "ProductId", operator: "eq", value: e.data.Id }
+        },
+        pageSize: 1,
+        columns: [ 
+            { field: "Quantity", format: "{0:#}" },
+            {
+                field: "Color",
+                title: "Color",
+                editor: combinationEditor,
+                groupHeaderTemplate: "Color: #=data.value#)#",
+                width: 125
+            },
+            { field: "UnitPrice", title: "Unit Price", format: "{0:c}" },
+            { command: ["edit", "destroy"], title: "&nbsp;", width: "180px" }
+        ],
+        toolbar: ["create", "search"],
+        editable: "popup",
+    });
+}
+
+function combinationEditor(container, options) {
+    $('<input required name="Color">')
+        .appendTo(container)
+        .kendoDropDownList({
+            autoBind: false,
+            dataTextField: "Name",
+            dataValueField: "Key",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/Combination/Color",
+                        type: "GET",
+                        dataType: "json"
+                    },
+                    data: function (model) {
+                        return {
+                            model
+                        };
+                    }
+                }
+            }
         });
 }
 
-var categories = [{
-    "CategoryID": 1,
-    "CategoryName": "Beverages"
-}, {
-    "CategoryID": 2,
-    "CategoryName": "Condiments"
-}, {
-    "CategoryID": 3,
-    "CategoryName": "Confections"
-}, {
-    "CategoryID": 4,
-    "CategoryName": "Dairy Products"
-}, {
-    "CategoryID": 5,
-    "CategoryName": "Grains/Cereals"
-}, {
-    "CategoryID": 6,
-    "CategoryName": "Meat/Poultry"
-}, {
-    "CategoryID": 7,
-    "CategoryName": "Produce"
-}, {
-    "CategoryID": 8,
-    "CategoryName": "Seafood"
-}];
+function error_handler(e) {
+    if (e.errors) {
+        let message = "Errors:\n";
+        $.each(e.errors, function (key, value) {
+            if ('errors' in value) {
+                $.each(value.errors, function() {
+                    message += this + "\n";
+                });
+            }
+        });
+        alert(message);
+    }
+}

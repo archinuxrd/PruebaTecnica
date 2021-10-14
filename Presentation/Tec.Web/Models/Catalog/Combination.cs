@@ -1,13 +1,13 @@
+using System;
+using Tec.Web.Core;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tec.Web.Models.Catalog
 {
-    public class Combination
+    public class Combination : BaseEntity
     {
         #region Properties
-        public int Id { get; set; }
-
         public string Color { get; set; }
 
         [Range(typeof(int), "0", "9999")]
@@ -16,12 +16,14 @@ namespace Tec.Web.Models.Catalog
         [Column(TypeName = "decimal(9, 2)")]
         public decimal UnitPrice { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         [ForeignKey("Product")]
         public int ProductId { get; set; }
         #endregion
 
         #region Navigation
-        public virtual Product Product { get; set; }
+        public Product Product { get; set; }
         #endregion
     }
 }

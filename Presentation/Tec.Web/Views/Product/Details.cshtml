@@ -1,8 +1,86 @@
-@model TModel
+@model Tec.Web.Models.Catalog.ProductViewModel
 
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+    ViewBag.Title = "Details";
 }
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="display-5">@Model.Name - <small class="text-muted">Details</small></h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                Back to Product List
+            </a>
+        </div>
+    </div>
+</div>
 
-<h2>title</h2>
+<div class="row">
+    <div class="col-12 col-sm-6">
+        <h3 class="d-inline-block d-sm-none">@Model.Name</h3>
+        <div class="col-12" style="height: 490px;">
+            <img src="~/imgs/prod-1.jpg" class="product-image" alt="Product Image">
+        </div>
+        <div class="col-12 product-image-thumbs">
+            <div class="product-image-thumb active"><img src="~/imgs/prod-1.jpg" alt="Product Image">
+            </div>
+            <div class="product-image-thumb"><img src="~/imgs/prod-2.jpg" alt="Product Image"></div>
+            <div class="product-image-thumb"><img src="~/imgs/prod-3.jpg" alt="Product Image"></div>
+            <div class="product-image-thumb"><img src="~/imgs/prod-4.jpg" alt="Product Image"></div>
+            <div class="product-image-thumb"><img src="~/imgs/prod-5.jpg" alt="Product Image"></div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <h3 class="my-3">@Model.Name</h3>
+        <p>@Model.Description</p>
+        <hr>
+        <h4>Available Colors</h4>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            @foreach (var c in @Model.Combinations)
+            {
+                <label class="btn btn-default products text-center">
+                    <input type="radio" name="Color" id="Color-@c.Color" autocomplete="off" value="@c.Color" />
+                    <input type="hidden" value="@c.UnitPrice" />
+                    @c.Color
+                    <br>
+                    <i class="fas fa-circle fa-2x" style="color: @c.Color;"></i>
+                </label>
+            }
+        </div>
+        <h5 class="my-3">click the color to see the product price.</h5>
+        <div class="bg-gray-light py-2 px-3 mt-4">
+            <h2 class="mb-0">
+                <span id="product-price"></span>
+            </h2>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('.product-image-thumb').on('click', function () {
+            let $image_element = $(this).find('img');
+            $('.product-image').prop('src', $image_element.attr('src'));
+            $('.product-image-thumb.active').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        $('.products').each(function (index, data) {
+            $(this).on("click", function () {
+                $('#product-price').html("RD$" + $('input[type=hidden]')[index].value);
+            });
+        });
+        
+        if ($('input[type=hidden]')[0] !== undefined && $('input[type=hidden]')[0].value !== undefined){
+            $('#product-price').html("RD$" + $('input[type=hidden]')[0].value);
+        }
+        
+        if ($('input[type=hidden]')[0] === undefined)
+        {
+            $('#product-price').html("No product price added!");
+        }
+    });
+</script>
+}

@@ -1,22 +1,19 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using Tec.Web.Core;
 
 namespace Tec.Web.Models.Catalog
 {
-    public class Product
+    public partial class Product : BaseEntity
     {
         #region Ctor
         public Product()
         {
-            ProductCombinations = new List<ProductCombination>();
+            Combinations = new List<Combination>();
         }
         #endregion
 
         #region Properties
-        public int Id { get; set; }
-
         public string Sku { get; set; }
 
         public string Name { get; set; }
@@ -27,7 +24,7 @@ namespace Tec.Web.Models.Catalog
         #endregion
 
         #region Navigation
-        public virtual ICollection<ProductCombination> ProductCombinations { get; set; }
+        public ICollection<Combination> Combinations { get; set; }
         #endregion
     }
 }

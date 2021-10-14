@@ -1,11 +1,15 @@
+using AutoMapper;
 using Tec.Web.Data;
 using FluentValidation;
 using Tec.Web.Repositories;
 using Tec.Web.Models.Catalog;
+using Tec.Web.Services.Catalog;
+using Tec.Web.Validators.Catalog;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Tec.Web.Core.Infrastructure.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tec.Web.Validators.Catalog;
 
 namespace Tec.Web.Infrastructure.Extensions
 {
@@ -18,6 +22,8 @@ namespace Tec.Web.Infrastructure.Extensions
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             return services;
         }
 
@@ -31,9 +37,15 @@ namespace Tec.Web.Infrastructure.Extensions
         
         public static IServiceCollection AddAutoMapper(this IServiceCollection services)
         {
-            services.AddTransient<IValidator<Product>, ProductValidator>();
-            services.AddTransient<IValidator<ProductViewModel>, ProductViewModelValidator>();
-            services.AddTransient<IValidator<Combination>, CombinationValidator>();
+            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddScoped<IMapper, Mapper>();
+            return services;
+        }
+        
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IProductCombinationService, ProductCombinationService>();
             return services;
         }
     }

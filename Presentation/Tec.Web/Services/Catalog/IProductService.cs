@@ -1,20 +1,27 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tec.Web.Models.Catalog;
 
-namespace Tec.Web.Services
+namespace Tec.Web.Services.Catalog
 {
-    public interface IProductService
+    public partial interface IProductService
     {
-        public Product Add();
-        public Task<bool> AnyAsync(Expression<Func<Product, bool>> expression);
-        public Task<Product> AllAsync(Expression<Func<Product, bool>> expression);
-        public Task<Product> AllAsync();
-        public Task<Product> FirstAsync();
-        public Task<Product> GetByIdAsync();
-        public Task<int> GetTotalRecords();
-        public Product Update();
-        public Task Delete();
+        Task<ProductViewModel> AddAsync(ProductViewModel model);
+        Task<bool> AnyAsync(Expression<Func<ProductViewModel, bool>> expression);
+        Task<ProductViewModel> FirstByIdAsync(int id, string includeProperties = null);
+        Task<ProductViewModel> FirstAsync(ProductViewModel model, string includeProperties = null);
+
+        Task<ICollection<ProductViewModel>> GetAllAsync(
+            Expression<Func<ProductViewModel, bool>> expression = null,
+            Func<IQueryable<ProductViewModel>, IOrderedQueryable<ProductViewModel>> orderBy = null,
+            string includeProperties = null);
+
+        Task<ProductViewModel> UpdateAsync(ProductViewModel viewModel);
+        Task<int> DeleteProductAsync(ProductViewModel product);
+        Task<ICollection<CombinationViewModel>> GetAllCombinationsByProductIdAsync(int productId);
+        IQueryable<Product> Table { get; }
     }
 }

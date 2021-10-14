@@ -1,15 +1,10 @@
-using System;
-using System.Linq;
-using Tec.Web.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Newtonsoft.Json;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity.UI;
+using Newtonsoft.Json.Serialization;
+using Tec.Web.Infrastructure.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,17 +17,32 @@ namespace Tec.Web
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+            services.AddRepository(Configuration);
+            services.AddServices();
+            services.AddAutoMapper();
+            services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation()
+                .AddFluentValidation(s =>
+                {
+                    s.RegisterValidatorsFromAssemblyContaining<Startup>();
+                })
+                .AddNewtonsoftJson(options =>
+                {
+                    // Ignore circular references
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    // do not use camel case
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                    // Set the time format
+                    //options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                    // If the field is a null value, the field will not be returned to the front end
+                    // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
+            services.AddValidator();
             services.AddRazorPages();
         }
 

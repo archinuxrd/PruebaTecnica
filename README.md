@@ -9,7 +9,7 @@ Una app web con .Net C# con:
 
 •	Solo se visualizará el precio del producto seleccionado por el color previamente configurado.
 
-# To build project
+# To building the project
 
 `dotnet build`
 

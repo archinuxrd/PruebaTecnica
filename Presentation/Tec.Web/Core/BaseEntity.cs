@@ -1,7 +1,9 @@
 namespace Tec.Web.Core
 {
-    public class BaseEntity
+    public partial class BaseEntity
     {
-        
+        #region Properties
+        public int Id { get; set; }
+        #endregion
     }
 }
