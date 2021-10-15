@@ -37,10 +37,6 @@ namespace Tec.Web
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     // do not use camel case
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                    // Set the time format
-                    //options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                    // If the field is a null value, the field will not be returned to the front end
-                    // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
             services.AddValidator();
             services.AddRazorPages();

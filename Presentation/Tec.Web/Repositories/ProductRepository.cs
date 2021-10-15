@@ -17,15 +17,5 @@ namespace Tec.Web.Repositories
             _db = db;
         }
         #endregion
-
-        #region Methods
-        public async Task AddProductCombination(IEnumerable<Combination> combinations)
-        {
-            foreach (var combination in combinations)
-            {
-                await _db.AddAsync(combination);
-            }
-        }
-        #endregion
     }
 }

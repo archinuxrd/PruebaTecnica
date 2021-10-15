@@ -11,19 +11,12 @@ namespace Tec.Web.Repositories
     {
         #region Methods
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression);
-        Task<ICollection<TEntity>> AllAsync(Expression<Func<TEntity, bool>> expression);
-
-        Task<ICollection<TEntity>> AllAsync(Expression<Func<TEntity, bool>> expression, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, string includeProperties = null);
-
-        Task<ICollection<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>> func = null);
-        
-        Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression);
-
-        Task<TEntity> GetByIdAsync(int id);
 
         Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> expression, string includeProperties = null);
 
         TEntity Add(TEntity entity);
+
+        Task<TEntity> GetByIdAsync(int id);
 
         void Update(TEntity entity);
 
@@ -32,12 +25,12 @@ namespace Tec.Web.Repositories
         void Delete(TEntity entity);
 
         Task DeleteCombinationsAsync(ICollection<TEntity> entities);
-
-        Task<int> GetTotalRecords();
         
         Task<ICollection<TEntity>> GetAllCombinationsByPatternIdAsync(int id);
         #endregion
         
+        #region Properties
         IQueryable<TEntity> Table { get; }
+        #endregion
     }
 }

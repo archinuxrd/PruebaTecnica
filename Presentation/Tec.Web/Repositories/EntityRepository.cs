@@ -28,20 +28,6 @@ namespace Tec.Web.Repositories
             return await _db.Set<TEntity>().AnyAsync(expression);
         }
 
-        public virtual async Task<ICollection<TEntity>> AllAsync(Expression<Func<TEntity, bool>> expression)
-        {
-            if (expression == null)
-            {
-                return await _db.Set<TEntity>().AsNoTracking().ToListAsync();
-            }
-            return await _db.Set<TEntity>().Where(expression).AsNoTracking().ToListAsync();
-        }
-
-        public virtual async Task<List<TEntity>> AllAsync()
-        {
-            return await _db.Set<TEntity>().AsNoTracking().ToListAsync();
-        }
-
         public virtual async Task<ICollection<TEntity>> AllAsync(Expression<Func<TEntity, bool>> expression, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, string includeProperties = null)
         {
             IQueryable<TEntity> query = _db.Set<TEntity>();
@@ -61,27 +47,6 @@ namespace Tec.Web.Repositories
                 return await orderBy(query).ToListAsync();
             }
             return await query.ToListAsync();
-        }
-
-        public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
-        {
-            return await _db.Set<TEntity>().FirstOrDefaultAsync(expression);
-        }
-        
-        public virtual async Task<ICollection<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>> func = null)
-        {
-            async Task<ICollection<TEntity>> GetAllEntityAsync()
-            {
-                var query = Table;
-                query = func != null ? await func(query) : query;
-                return await query.ToListAsync();
-            }
-            return await GetAllEntityAsync();
-        }
-
-        public virtual async Task<TEntity> GetByIdAsync(int id)
-        {
-            return await _db.Set<TEntity>().FindAsync(id);
         }
 
         public virtual async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> expression, string includeProperties = null)
@@ -111,14 +76,13 @@ namespace Tec.Web.Repositories
         {
             _db.Set<TEntity>().Update(entity);
         }
-
-        public async Task DeleteAsync(int id)
+        
+        public virtual async Task<TEntity> GetByIdAsync(int id)
         {
-            var entity = await GetByIdAsync(id);
-            _db.Set<TEntity>().Remove(entity);
+            return await _db.Set<TEntity>().FindAsync(id);
         }
 
-        public virtual async Task Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
             _db.Set<TEntity>().Remove(entity);
@@ -148,12 +112,6 @@ namespace Tec.Web.Repositories
                         .OrderBy(c => c.Id)
                         .ThenBy(c => c.Id)
                         .ToListAsync();
-        }
-
-        public virtual async Task<int> GetTotalRecords()
-        {
-            var total = await _db.Set<TEntity>().CountAsync();
-            return total;
         }
         #endregion
         

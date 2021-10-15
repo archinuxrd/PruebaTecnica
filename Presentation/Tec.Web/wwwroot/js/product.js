@@ -1,7 +1,7 @@
 ﻿$(document).ready(function() {
     let dataSource = $("#grid").kendoGrid({
         dataSource: {
-            pageSize: 5,
+            pageSize: 10,
             transport: {
                 read:  {
                     url: "/Product/Get",
