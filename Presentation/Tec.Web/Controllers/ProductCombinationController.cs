@@ -41,7 +41,7 @@ namespace Tec.Web.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("Edit")]
         public async Task<JsonResult> UpdateAsync(CombinationViewModel model)
         {
             if (model != null)

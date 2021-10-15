@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Tec.Web.Core;
+using System.Collections.Generic;
 
 namespace Tec.Web.Models.Catalog
 {

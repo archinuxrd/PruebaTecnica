@@ -1,11 +1,20 @@
 ﻿$(document).ready(function() {
     let dataSource = $("#grid").kendoGrid({
         dataSource: {
+            pageSize: 5,
             transport: {
                 read:  {
                     url: "/Product/Get",
                     type: "POST",
-                    dataType: "json"
+                    dataType: "json",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    },
+                    success: function (e) {
+                        alert("hola ");
+                    }
                 },
                 update: {
                     url: "/Product/Edit",
@@ -35,7 +44,7 @@
                     }
                 },
                 parameterMap: function(options, operation) {
-                    if (operation !== "read" && options) {
+                    if (operation !== "read" && options.model) {
                         return { model: options.model};
                     }
                 }
@@ -50,15 +59,21 @@
                         Description: { type: "string", validation: { required: true }, }
                     }
                 }
+            },
+            requestEnd: function (e) {
+                if (e.type === "update") {
+                    this.read();
+                }
+                if (e.type === "create") {
+                    this.read();
+                }
             }
         },
-        height: 600,
+        batch: true,
+        height: 500,
         sortable: true,
-        pageSize: 2,
         pageable: {
-            refresh: true,
-            input: false,
-            numeric: true
+            refresh: true
         },
         toolbar: ["create", "search"],
         detailInit: detailInit,
@@ -79,7 +94,7 @@
             },
             { command: [{ text: "View", click: showDetails, title: "&nbsp;" }, "edit", "destroy"], title: "&nbsp;", width: "275px" }
         ],
-        editable: "popup",
+        editable: "inline",
     });
 });
 
@@ -106,6 +121,15 @@ function detailInit(e) {
                 destroy: {
                     url: "/Combination/Delete",
                     type: "DELETE",
+                    data: function(model) {
+                        return {
+                            model
+                        };
+                    }
+                },
+                update: {
+                    url: "/Combination/Edit",
+                    type: "PUT",
                     data: function(model) {
                         return {
                             model
@@ -139,23 +163,29 @@ function detailInit(e) {
                     }
                 }
             },
+            requestEnd: function (e) {
+                if (e.type === "update") {
+                    this.read();
+                }
+                if (e.type === "create") {
+                    this.read();
+                }
+            },
             filter: { field: "ProductId", operator: "eq", value: e.data.Id }
         },
-        pageSize: 1,
         columns: [ 
-            { field: "Quantity", format: "{0:#}" },
+            { field: "Quantity", format: "{0:#}", width: 150 },
             {
                 field: "Color",
                 title: "Color",
                 editor: combinationEditor,
-                groupHeaderTemplate: "Color: #=data.value#)#",
-                width: 125
+                groupHeaderTemplate: "Color: #=data.value#)#"
             },
-            { field: "UnitPrice", title: "Unit Price", format: "{0:c}" },
-            { command: ["edit", "destroy"], title: "&nbsp;", width: "180px" }
+            { field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: 165 },
+            { command: ["edit", "destroy"], title: "&nbsp;", width: 190 }
         ],
         toolbar: ["create", "search"],
-        editable: "popup",
+        editable: "inline",
     });
 }
 
@@ -163,7 +193,6 @@ function combinationEditor(container, options) {
     $('<input required name="Color">')
         .appendTo(container)
         .kendoDropDownList({
-            autoBind: false,
             dataTextField: "Name",
             dataValueField: "Key",
             dataSource: {

@@ -65,11 +65,8 @@ namespace Tec.Web.Controllers
             {
                 await _productService.AddAsync(model);
             }
-            return new JsonResult(new MessageViewModel
-            {
-                Success = true,
-                Message = "The Product was successfully created!"
-            });
+            var data = await _productService.GetAllAsync(null, includeProperties: "Combinations");
+            return new JsonResult(data);
         }
 
         [HttpPost]
@@ -88,11 +85,8 @@ namespace Tec.Web.Controllers
             {
                 await _productService.UpdateAsync(model);
             }
-            return new JsonResult(new MessageViewModel
-            {
-                Success = true,
-                Message = "Product was successfully Edited!"
-            });
+            var data = await _productService.GetAllAsync(null, includeProperties: "Combinations");
+            return new JsonResult(data);
         }
     }
 }
